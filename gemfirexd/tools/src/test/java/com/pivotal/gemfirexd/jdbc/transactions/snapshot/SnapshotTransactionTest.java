@@ -26,6 +26,7 @@ import com.gemstone.org.jgroups.oswego.concurrent.CyclicBarrier;
 import com.pivotal.gemfirexd.TestUtil;
 import com.pivotal.gemfirexd.internal.engine.Misc;
 import com.pivotal.gemfirexd.jdbc.JdbcTestBase;
+import io.snappydata.test.dunit.SerializableRunnable;
 
 
 public class SnapshotTransactionTest  extends JdbcTestBase {
@@ -45,8 +46,24 @@ public class SnapshotTransactionTest  extends JdbcTestBase {
     return "fine";
   }
 
+  @Override
+  protected void setUp() throws Exception {
+    super.setUp();
+    System.setProperty("gemfire.Cache.ENABLE_DEFAULT_SNAPSHOT_ISOLATION", "true");
+  }
+
+  @Override
+  public void tearDown() throws Exception {
+    System.setProperty("gemfire.Cache.ENABLE_DEFAULT_SNAPSHOT_ISOLATION", "false");
+    super.tearDown();
+
+  }
+
   public void testRVVSnapshotContains() throws Exception {
     Connection conn = getConnection();
+    if(!Misc.getGemFireCache().snapshotEnabled())
+      return;
+
     PartitionAttributesFactory paf = new PartitionAttributesFactory();
     PartitionAttributes prAttr = paf.setTotalNumBuckets(1).create();
     AttributesFactory attr = new AttributesFactory();
@@ -87,6 +104,9 @@ public class SnapshotTransactionTest  extends JdbcTestBase {
 
   public void testSnapshotInsertTableAPI() throws Exception {
     Connection conn = getConnection();
+    if(!Misc.getGemFireCache().snapshotEnabled())
+      return;
+
     PartitionAttributesFactory paf = new PartitionAttributesFactory();
     PartitionAttributes prAttr = paf.setTotalNumBuckets(1).create();
     AttributesFactory attr = new AttributesFactory();
@@ -161,7 +181,10 @@ public class SnapshotTransactionTest  extends JdbcTestBase {
 
 
   public void testSnapshotInsertAPI() throws Exception {
+
     Connection conn = getConnection();
+    if(!Misc.getGemFireCache().snapshotEnabled())
+      return;
     PartitionAttributesFactory paf = new PartitionAttributesFactory();
     PartitionAttributes prAttr = paf.setTotalNumBuckets(1).create();
     AttributesFactory attr = new AttributesFactory();
@@ -235,8 +258,9 @@ public class SnapshotTransactionTest  extends JdbcTestBase {
   }
 
   public void testSnapshotPutAllAPI() throws Exception {
-
     Connection conn = getConnection();
+    if(!Misc.getGemFireCache().snapshotEnabled())
+      return;
     PartitionAttributesFactory paf = new PartitionAttributesFactory();
     PartitionAttributes prAttr = paf.setTotalNumBuckets(1).create();
     AttributesFactory attr = new AttributesFactory();
@@ -315,6 +339,8 @@ public class SnapshotTransactionTest  extends JdbcTestBase {
 
   public void testSnapshotInsertUpdateDeleteAPI() throws Exception {
     Connection conn = getConnection();
+    if(!Misc.getGemFireCache().snapshotEnabled())
+      return;
     PartitionAttributesFactory paf = new PartitionAttributesFactory();
     PartitionAttributes prAttr = paf.setTotalNumBuckets(1).create();
     AttributesFactory attr = new AttributesFactory();
@@ -391,6 +417,8 @@ public class SnapshotTransactionTest  extends JdbcTestBase {
 
   public void testTwoSnapshotInsertAPI() throws Exception {
     Connection conn = getConnection();
+    if (!Misc.getGemFireCache().snapshotEnabled())
+      return;
     PartitionAttributesFactory paf = new PartitionAttributesFactory();
     PartitionAttributes prAttr = paf.setTotalNumBuckets(1).create();
     AttributesFactory attr = new AttributesFactory();
@@ -455,6 +483,8 @@ public class SnapshotTransactionTest  extends JdbcTestBase {
 
   public void testCommitOnReplicatedTable1() throws Exception {
     Connection conn = getConnection();
+    if(!Misc.getGemFireCache().snapshotEnabled())
+      return;
     Statement st = conn.createStatement();
     st.execute("Create table t1 (c1 int not null , c2 int not null, "
         + "primary key(c1)) replicate"+getSuffix());
@@ -520,6 +550,8 @@ public class SnapshotTransactionTest  extends JdbcTestBase {
 
   public void testReadSnapshotOnReplicatedTable() throws Exception {
     Connection conn = getConnection();
+    if (!Misc.getGemFireCache().snapshotEnabled())
+      return;
     Statement st = conn.createStatement();
     st.execute("Create table t1 (c1 int not null , c2 int not null, "
         + "primary key(c1)) replicate persistent enable concurrency checks"+getSuffix());
@@ -596,6 +628,8 @@ public class SnapshotTransactionTest  extends JdbcTestBase {
   // only insert operations to ignore
   public void testReadSnapshotOnPartitionedTable() throws Exception {
     Connection conn = getConnection();
+    if(!Misc.getGemFireCache().snapshotEnabled())
+      return;
     Statement st = conn.createStatement();
     st.execute("Create table t1 (c1 int not null , c2 int not null, "
         + "primary key(c1)) partition by column (c1) enable concurrency checks "+getSuffix());
@@ -681,6 +715,8 @@ public class SnapshotTransactionTest  extends JdbcTestBase {
 
   public void testSnapshotAgainstUpdateOperations() throws Exception {
     Connection conn = getConnection();
+    if(!Misc.getGemFireCache().snapshotEnabled())
+      return;
     Statement st = conn.createStatement();
     st.execute("Create table t1 (c1 int not null , c2 int not null, c3 int not null,"
         + "primary key(c1)) partition by column (c1) enable concurrency checks "+getSuffix());
@@ -729,6 +765,8 @@ public class SnapshotTransactionTest  extends JdbcTestBase {
 
   public void testSnapshotAgainstDeleteOperations() throws Exception {
     Connection conn = getConnection();
+    if(!Misc.getGemFireCache().snapshotEnabled())
+      return;
     Statement st = conn.createStatement();
     st.execute("Create table t1 (c1 int not null , c2 int not null, c3 int not null, "
         + "primary key(c1)) partition by column (c1) enable concurrency checks "+getSuffix());
@@ -768,6 +806,8 @@ public class SnapshotTransactionTest  extends JdbcTestBase {
 
   public void _testSnapshotAgainstMultipleTable() throws Exception {
     Connection conn = getConnection();
+    if(!Misc.getGemFireCache().snapshotEnabled())
+      return;
     Statement st = conn.createStatement();
     st.execute("Create table t1 (c1 int not null , c2 int not null, "
         + "primary key(c1)) partition by column (c1) enable concurrency checks "+getSuffix());

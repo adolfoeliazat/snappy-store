@@ -23,6 +23,7 @@ import com.gemstone.gemfire.cache.Region;
 import com.gemstone.gemfire.internal.cache.*;
 import com.pivotal.gemfirexd.DistributedSQLTestBase;
 import com.pivotal.gemfirexd.TestUtil;
+import com.pivotal.gemfirexd.internal.engine.Misc;
 import io.snappydata.test.dunit.SerializableCallable;
 import io.snappydata.test.dunit.SerializableRunnable;
 import io.snappydata.test.dunit.VM;
@@ -54,6 +55,26 @@ public class SnapShotTxDUnit extends DistributedSQLTestBase {
     File dir = new File("diskDir", "disk" + String.valueOf(vmNum)).getAbsoluteFile();
     dir.mkdirs();
     return dir;
+  }
+
+  private void setSnapshotInEveryVM() {
+    invokeInEveryVM(new SerializableRunnable() {
+      @Override
+      public void run() {
+        System.setProperty("gemfire.Cache.ENABLE_DEFAULT_SNAPSHOT_ISOLATION", "true");
+      }
+    });
+  }
+
+  @Override
+  public void tearDown2() throws Exception {
+    super.tearDown2();
+    invokeInEveryVM(new SerializableRunnable() {
+      @Override
+      public void run() {
+        System.setProperty("gemfire.Cache.ENABLE_DEFAULT_SNAPSHOT_ISOLATION", "false");
+      }
+    });
   }
 
   public static void createPR(String partitionedRegionName, Integer redundancy,
@@ -100,9 +121,12 @@ public class SnapShotTxDUnit extends DistributedSQLTestBase {
   }
 
   public void testSnapshotInsertAPI() throws Exception {
+    setSnapshotInEveryVM();
     startVMs(0, 2);
     Properties props = new Properties();
     final Connection conn = TestUtil.getConnection(props);
+    if(!Misc.getGemFireCache().snapshotEnabled())
+      return;
     conn.createStatement();
 
     serverSQLExecute(1, "create schema test");
@@ -217,9 +241,12 @@ public class SnapShotTxDUnit extends DistributedSQLTestBase {
   }
 
   public void testSnapshotInsertAPI2() throws Exception {
+    setSnapshotInEveryVM();
     startVMs(0, 2);
     Properties props = new Properties();
     final Connection conn = TestUtil.getConnection(props);
+    if(!Misc.getGemFireCache().snapshotEnabled())
+      return;
     conn.createStatement();
 
     VM server1 = this.serverVMs.get(0);
@@ -350,9 +377,12 @@ public class SnapShotTxDUnit extends DistributedSQLTestBase {
   }
 
   public void testSnapshotPutAllAPI() throws Exception {
+    setSnapshotInEveryVM();
     startVMs(0, 2);
     Properties props = new Properties();
     final Connection conn = TestUtil.getConnection(props);
+    if(!Misc.getGemFireCache().snapshotEnabled())
+      return;
     conn.createStatement();
 
     VM server1 = this.serverVMs.get(0);
@@ -528,9 +558,12 @@ public class SnapShotTxDUnit extends DistributedSQLTestBase {
 
 
   public void testPutAllMultiThreaded() throws Exception {
+    setSnapshotInEveryVM();
     startVMs(0, 2);
     Properties props = new Properties();
     final Connection conn = TestUtil.getConnection(props);
+    if(!Misc.getGemFireCache().snapshotEnabled())
+      return;
     conn.createStatement();
 
     VM server1 = this.serverVMs.get(0);
@@ -645,9 +678,12 @@ public class SnapShotTxDUnit extends DistributedSQLTestBase {
   }
 
   public void testNoConflict() throws Exception {
+    setSnapshotInEveryVM();
     startVMs(0, 2);
     Properties props = new Properties();
     final Connection conn = TestUtil.getConnection(props);
+    if(!Misc.getGemFireCache().snapshotEnabled())
+      return;
     conn.createStatement();
 
     VM server1 = this.serverVMs.get(0);
@@ -737,9 +773,12 @@ public class SnapShotTxDUnit extends DistributedSQLTestBase {
   }
 
   public void testInsertDeleteUpdate() throws Exception {
+    setSnapshotInEveryVM();
     startVMs(0, 2);
     Properties props = new Properties();
     final Connection conn = TestUtil.getConnection(props);
+    if(!Misc.getGemFireCache().snapshotEnabled())
+      return;
     conn.createStatement();
 
 
@@ -864,9 +903,12 @@ public class SnapShotTxDUnit extends DistributedSQLTestBase {
   }
 
   public void testRegionEntryGarbageCollection() throws Exception {
+    setSnapshotInEveryVM();
     startVMs(0, 2);
     Properties props = new Properties();
     final Connection conn = TestUtil.getConnection(props);
+    if(!Misc.getGemFireCache().snapshotEnabled())
+      return;
     Statement st = conn.createStatement();
 
 
@@ -933,9 +975,12 @@ public class SnapShotTxDUnit extends DistributedSQLTestBase {
   }
 
   public void testGettingProperVersion() throws Exception {
+    setSnapshotInEveryVM();
     startVMs(0, 2);
     Properties props = new Properties();
     final Connection conn = TestUtil.getConnection(props);
+    if(!Misc.getGemFireCache().snapshotEnabled())
+      return;
     conn.createStatement();
 
 
@@ -994,7 +1039,7 @@ public class SnapShotTxDUnit extends DistributedSQLTestBase {
 
         r.getCache().getCacheTransactionManager().commit();
 
-         num = 0;
+        num = 0;
         r.getCache().getCacheTransactionManager().begin(IsolationLevel.SNAPSHOT, null);
         txstate = TXManagerImpl.getCurrentTXState();
         txitr = txstate.getLocalEntriesIterator(null, false, false, true, (LocalRegion)r);

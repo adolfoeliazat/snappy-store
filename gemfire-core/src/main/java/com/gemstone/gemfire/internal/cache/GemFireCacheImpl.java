@@ -283,9 +283,9 @@ public class GemFireCacheImpl implements InternalCache, ClientCache, HasCachePer
   /**
    * System property to disable default snapshot
    */
-  public final boolean DEFAULT_SNAPSHOT_DISABLED = Boolean.getBoolean("gemfire.Cache.DISABLE_DEFAULT_SNAPSHOT_ISOLATION");
+  public final boolean DEFAULT_SNAPSHOT_ENABLED = Boolean.getBoolean("gemfire.Cache.ENABLE_DEFAULT_SNAPSHOT_ISOLATION");
 
-  public final boolean DEFAULT_SNAPSHOT_ENABLED_TX = Boolean.getBoolean("gemfire.Cache.DISABLE_DEFAULT_SNAPSHOT_ISOLATION_TX");
+  public final boolean DEFAULT_SNAPSHOT_ENABLED_TX = Boolean.getBoolean("gemfire.Cache.ENABLE_DEFAULT_SNAPSHOT_ISOLATION_TX");
 
   /**
    * Property set to true if resource manager heap percentage is set and query monitor is required
@@ -1016,11 +1016,11 @@ public class GemFireCacheImpl implements InternalCache, ClientCache, HasCachePer
         }
       };
 
-      if (snapshotEnabled()) {
+      //if (snapshotEnabled()) {
         oldEntryMapCleanerService = Executors.newScheduledThreadPool(1, oldEntryGCtf);
         oldEntryMapCleanerService.scheduleAtFixedRate(new OldEntriesCleanerThread(), 0, OLD_ENTRIES_CLEANER_TIME_INTERVAL,
             TimeUnit.MILLISECONDS);
-      }
+      //}
 
       this.creationDate = new Date();
 
@@ -1419,9 +1419,14 @@ public class GemFireCacheImpl implements InternalCache, ClientCache, HasCachePer
   // this snapshot is different from snapshot for export.
   // however this can be used for that purpose.
   public boolean snapshotEnabled() {
-    return !DEFAULT_SNAPSHOT_DISABLED;
+    // if rowstore return false
+    // if snappy return true
+    if (getInternalProductCallbacks().isSnappyStore()) {
+      return !DEFAULT_SNAPSHOT_ENABLED;
+    } else {
+      return DEFAULT_SNAPSHOT_ENABLED;
+    }
   }
-
 
   public boolean snapshotEnabledForTX() {
     // snapshot should be enabled and if LockingPolicy is RC/RR then it should not be disabled

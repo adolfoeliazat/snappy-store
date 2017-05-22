@@ -32,6 +32,7 @@ import com.gemstone.gemfire.cache.Region;
 import com.gemstone.gemfire.internal.cache.*;
 import com.pivotal.gemfirexd.DistributedSQLTestBase;
 import com.pivotal.gemfirexd.TestUtil;
+import com.pivotal.gemfirexd.internal.engine.Misc;
 import io.snappydata.test.dunit.SerializableCallable;
 import io.snappydata.test.dunit.SerializableRunnable;
 import io.snappydata.test.dunit.VM;
@@ -50,7 +51,28 @@ public class MVCCDUnit extends DistributedSQLTestBase {
   }
 
 
+  private void setSnapshotInEveryVM(){
+    invokeInEveryVM(new SerializableRunnable() {
+      @Override
+      public void run() {
+        System.setProperty("gemfire.Cache.ENABLE_DEFAULT_SNAPSHOT_ISOLATION", "true");
+      }
+    });
+  }
+
+  @Override
+  public void tearDown2() throws Exception {
+    super.tearDown2();
+    invokeInEveryVM(new SerializableRunnable() {
+      @Override
+      public void run() {
+        System.setProperty("gemfire.Cache.ENABLE_DEFAULT_SNAPSHOT_ISOLATION", "false");
+      }
+    });
+  }
+
   public void testSnapshotInsertAPI() throws Exception {
+    setSnapshotInEveryVM();
     startVMs(1, 2);
     Properties props = new Properties();
     final Connection conn = TestUtil.getConnection(props);
@@ -58,7 +80,6 @@ public class MVCCDUnit extends DistributedSQLTestBase {
 
     clientSQLExecute(1, "create table " + regionName + " (intcol int not null, text varchar" +
         "(100) not null) replicate persistent enable concurrency checks");
-
 
     VM server1 = this.serverVMs.get(0);
     VM server2 = this.serverVMs.get(1);
@@ -217,6 +238,7 @@ public class MVCCDUnit extends DistributedSQLTestBase {
   }
 
   public void testParallelTransactions() throws Exception {
+    setSnapshotInEveryVM();
     startVMs(1, 2);
     Properties props = new Properties();
     final Connection conn = TestUtil.getConnection(props);
@@ -286,6 +308,7 @@ public class MVCCDUnit extends DistributedSQLTestBase {
 
 
   public void testMixedOperations() throws Exception {
+    setSnapshotInEveryVM();
     startVMs(1, 2);
     Properties props = new Properties();
     final Connection conn = TestUtil.getConnection(props);
@@ -416,9 +439,11 @@ public class MVCCDUnit extends DistributedSQLTestBase {
   }
 
   public void testMixedOperationsGII() throws Exception {
+    setSnapshotInEveryVM();
     startVMs(1, 2);
     Properties props = new Properties();
     final Connection conn = TestUtil.getConnection(props);
+
     Statement st1 = conn.createStatement();
 
     clientSQLExecute(1, "create table " + regionName + " (intcol int not null, text varchar" +
@@ -548,6 +573,7 @@ public class MVCCDUnit extends DistributedSQLTestBase {
   }
 
   public void testMixedOperationsServerRestart() throws Exception {
+    setSnapshotInEveryVM();
     startVMs(1, 2);
     Properties props = new Properties();
     final Connection conn = TestUtil.getConnection(props);
@@ -702,6 +728,7 @@ public class MVCCDUnit extends DistributedSQLTestBase {
   // start the stopped server
   // check if all values are coming.
   public void testMixedOperationsDeltaGII() throws Exception {
+    setSnapshotInEveryVM();
     startVMs(1, 2);
     createDiskStore(true,1);
     Properties props = new Properties();
@@ -1017,6 +1044,7 @@ public class MVCCDUnit extends DistributedSQLTestBase {
 
 
   public void testParallelTransactionsUsingTestHook() throws Exception {
+    setSnapshotInEveryVM();
     startVMs(1, 2);
     Properties props = new Properties();
     final Connection conn = TestUtil.getConnection(props);
