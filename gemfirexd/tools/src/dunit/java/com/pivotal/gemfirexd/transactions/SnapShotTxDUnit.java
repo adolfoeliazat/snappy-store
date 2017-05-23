@@ -57,24 +57,28 @@ public class SnapShotTxDUnit extends DistributedSQLTestBase {
     return dir;
   }
 
-  private void setSnapshotInEveryVM() {
+  @Override
+  public void setUp() throws Exception {
+    System.setProperty("gemfire.Cache.ENABLE_DEFAULT_SNAPSHOT_ISOLATION", "true");
     invokeInEveryVM(new SerializableRunnable() {
       @Override
       public void run() {
         System.setProperty("gemfire.Cache.ENABLE_DEFAULT_SNAPSHOT_ISOLATION", "true");
       }
     });
+    super.setUp();
   }
 
   @Override
   public void tearDown2() throws Exception {
-    super.tearDown2();
+    System.setProperty("gemfire.Cache.ENABLE_DEFAULT_SNAPSHOT_ISOLATION", "false");
     invokeInEveryVM(new SerializableRunnable() {
       @Override
       public void run() {
         System.setProperty("gemfire.Cache.ENABLE_DEFAULT_SNAPSHOT_ISOLATION", "false");
       }
     });
+    super.tearDown2();
   }
 
   public static void createPR(String partitionedRegionName, Integer redundancy,
@@ -121,7 +125,7 @@ public class SnapShotTxDUnit extends DistributedSQLTestBase {
   }
 
   public void testSnapshotInsertAPI() throws Exception {
-    setSnapshotInEveryVM();
+    
     startVMs(0, 2);
     Properties props = new Properties();
     final Connection conn = TestUtil.getConnection(props);
@@ -241,7 +245,7 @@ public class SnapShotTxDUnit extends DistributedSQLTestBase {
   }
 
   public void testSnapshotInsertAPI2() throws Exception {
-    setSnapshotInEveryVM();
+    
     startVMs(0, 2);
     Properties props = new Properties();
     final Connection conn = TestUtil.getConnection(props);
@@ -377,7 +381,7 @@ public class SnapShotTxDUnit extends DistributedSQLTestBase {
   }
 
   public void testSnapshotPutAllAPI() throws Exception {
-    setSnapshotInEveryVM();
+    
     startVMs(0, 2);
     Properties props = new Properties();
     final Connection conn = TestUtil.getConnection(props);
@@ -558,7 +562,7 @@ public class SnapShotTxDUnit extends DistributedSQLTestBase {
 
 
   public void testPutAllMultiThreaded() throws Exception {
-    setSnapshotInEveryVM();
+    
     startVMs(0, 2);
     Properties props = new Properties();
     final Connection conn = TestUtil.getConnection(props);
@@ -678,7 +682,7 @@ public class SnapShotTxDUnit extends DistributedSQLTestBase {
   }
 
   public void testNoConflict() throws Exception {
-    setSnapshotInEveryVM();
+    
     startVMs(0, 2);
     Properties props = new Properties();
     final Connection conn = TestUtil.getConnection(props);
@@ -773,7 +777,7 @@ public class SnapShotTxDUnit extends DistributedSQLTestBase {
   }
 
   public void testInsertDeleteUpdate() throws Exception {
-    setSnapshotInEveryVM();
+    
     startVMs(0, 2);
     Properties props = new Properties();
     final Connection conn = TestUtil.getConnection(props);
@@ -903,7 +907,7 @@ public class SnapShotTxDUnit extends DistributedSQLTestBase {
   }
 
   public void testRegionEntryGarbageCollection() throws Exception {
-    setSnapshotInEveryVM();
+    
     startVMs(0, 2);
     Properties props = new Properties();
     final Connection conn = TestUtil.getConnection(props);
@@ -975,7 +979,7 @@ public class SnapShotTxDUnit extends DistributedSQLTestBase {
   }
 
   public void testGettingProperVersion() throws Exception {
-    setSnapshotInEveryVM();
+    
     startVMs(0, 2);
     Properties props = new Properties();
     final Connection conn = TestUtil.getConnection(props);
