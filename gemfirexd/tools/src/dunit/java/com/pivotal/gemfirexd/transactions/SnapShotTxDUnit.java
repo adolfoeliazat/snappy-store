@@ -129,8 +129,6 @@ public class SnapShotTxDUnit extends DistributedSQLTestBase {
     startVMs(0, 2);
     Properties props = new Properties();
     final Connection conn = TestUtil.getConnection(props);
-    if(!Misc.getGemFireCache().snapshotEnabled())
-      return;
     conn.createStatement();
 
     serverSQLExecute(1, "create schema test");
@@ -249,8 +247,6 @@ public class SnapShotTxDUnit extends DistributedSQLTestBase {
     startVMs(0, 2);
     Properties props = new Properties();
     final Connection conn = TestUtil.getConnection(props);
-    if(!Misc.getGemFireCache().snapshotEnabled())
-      return;
     conn.createStatement();
 
     VM server1 = this.serverVMs.get(0);
@@ -385,8 +381,6 @@ public class SnapShotTxDUnit extends DistributedSQLTestBase {
     startVMs(0, 2);
     Properties props = new Properties();
     final Connection conn = TestUtil.getConnection(props);
-    if(!Misc.getGemFireCache().snapshotEnabled())
-      return;
     conn.createStatement();
 
     VM server1 = this.serverVMs.get(0);
@@ -566,8 +560,6 @@ public class SnapShotTxDUnit extends DistributedSQLTestBase {
     startVMs(0, 2);
     Properties props = new Properties();
     final Connection conn = TestUtil.getConnection(props);
-    if(!Misc.getGemFireCache().snapshotEnabled())
-      return;
     conn.createStatement();
 
     VM server1 = this.serverVMs.get(0);
@@ -686,8 +678,6 @@ public class SnapShotTxDUnit extends DistributedSQLTestBase {
     startVMs(0, 2);
     Properties props = new Properties();
     final Connection conn = TestUtil.getConnection(props);
-    if(!Misc.getGemFireCache().snapshotEnabled())
-      return;
     conn.createStatement();
 
     VM server1 = this.serverVMs.get(0);
@@ -781,10 +771,7 @@ public class SnapShotTxDUnit extends DistributedSQLTestBase {
     startVMs(0, 2);
     Properties props = new Properties();
     final Connection conn = TestUtil.getConnection(props);
-    if(!Misc.getGemFireCache().snapshotEnabled())
-      return;
     conn.createStatement();
-
 
     VM server1 = this.serverVMs.get(0);
     VM server2 = this.serverVMs.get(1);
@@ -911,8 +898,6 @@ public class SnapShotTxDUnit extends DistributedSQLTestBase {
     startVMs(0, 2);
     Properties props = new Properties();
     final Connection conn = TestUtil.getConnection(props);
-    if(!Misc.getGemFireCache().snapshotEnabled())
-      return;
     Statement st = conn.createStatement();
 
 
@@ -983,8 +968,6 @@ public class SnapShotTxDUnit extends DistributedSQLTestBase {
     startVMs(0, 2);
     Properties props = new Properties();
     final Connection conn = TestUtil.getConnection(props);
-    if(!Misc.getGemFireCache().snapshotEnabled())
-      return;
     conn.createStatement();
 
 
