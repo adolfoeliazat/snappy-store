@@ -17,9 +17,12 @@
 
 package com.pivotal.gemfirexd.internal.impl.sql.rules;
 
+import java.util.List;
+
 import com.pivotal.gemfirexd.internal.engine.GfxdConstants;
 import com.pivotal.gemfirexd.internal.engine.distributed.metadata.DMLQueryInfo;
 import com.pivotal.gemfirexd.internal.engine.distributed.metadata.QueryInfo;
+import com.pivotal.gemfirexd.internal.engine.distributed.metadata.TableQueryInfo;
 import com.pivotal.gemfirexd.internal.engine.sql.execute.SnappyActivation;
 import com.pivotal.gemfirexd.internal.iapi.services.sanity.SanityManager;
 
@@ -58,6 +61,11 @@ class AnyOneOfExecutionEngineRule extends ExecutionEngineRule {
             "AnyOneOfExecutionEngineRule:PRIMARY_KEY_BASED_RULE:STORE");
         return ExecutionEngine.SPARK;
       }
+    }
+
+    List<TableQueryInfo> tqis = qInfo.getTableQueryInfoList();
+    if (tqis != null && tqis.size() > 1) {
+      return ExecutionEngine.SPARK;
     }
     return ExecutionEngine.NOT_DECIDED;
   }
