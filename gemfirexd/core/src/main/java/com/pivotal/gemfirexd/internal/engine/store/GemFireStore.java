@@ -864,6 +864,7 @@ public final class GemFireStore implements AccessFactory, ModuleControl,
 
       // remember these properties, so that modules that require one of
       // these can get them easily
+
       if (propValue != null) {
         this.serviceProperties.setProperty(propName, propValue);
       }
@@ -884,6 +885,9 @@ public final class GemFireStore implements AccessFactory, ModuleControl,
 
    if (remoteGemFireLocators == null) {
       remoteGemFireLocators = gfeGridMappings.remove(GemFireSparkConnectorCacheImpl.gfeGridPropPrefix);
+    }
+    for(String key : gfeGridMappings.keySet() ) {
+      props.remove(key);
     }
 
     propName = Attribute.DUMP_TIME_STATS_FREQ;
