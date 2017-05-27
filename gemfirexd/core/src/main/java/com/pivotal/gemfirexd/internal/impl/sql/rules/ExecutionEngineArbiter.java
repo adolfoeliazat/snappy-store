@@ -55,8 +55,8 @@ public class ExecutionEngineArbiter {
 
     //Rules that applies  on the store Queries
     if (enableRoutingArbitor) {
-      executionEngineRules.add(new AnyOneOfExecutionEngineRule());
       executionEngineRules.add(new ReplicatedTableExecutionEngineRule());
+      executionEngineRules.add(new AnyOneOfExecutionEngineRule());
     }
   }
 

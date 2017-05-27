@@ -30,6 +30,9 @@ class ReplicatedTableExecutionEngineRule extends AccumulativeExecutionEngineRule
   protected ExecutionEngine findExecutionEngine(DMLQueryInfo qInfo , ExecutionRuleContext context) {
     List<GemFireContainer> containers = qInfo.getContainerList();
     for (GemFireContainer container : containers) {
+      if (!container.isApplicationTable()) {
+        context.setAllApplicationTable(false);
+      }
       if (container.getRegion().getDataPolicy().withPartitioning()) {
         context.setExtraDecisionMakerParam(Boolean.TRUE);
       }
@@ -40,7 +43,10 @@ class ReplicatedTableExecutionEngineRule extends AccumulativeExecutionEngineRule
 
   @Override
   ExecutionEngine applyAccumulativeRuleAndGetEngine(ExecutionRuleContext context) {
-      if (context.getExtraDecisionMakerParam() == null) return ExecutionEngine.STORE;
+      if (context.getExtraDecisionMakerParam() == null && !context.getAllApplicationTable()) {
+        // This means some system tables so let it get executed here.
+        return ExecutionEngine.STORE;
+      }
       else return ExecutionEngine.NOT_DECIDED;
   }
 }

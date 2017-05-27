@@ -20,6 +20,7 @@ package com.pivotal.gemfirexd.internal.impl.sql.rules;
 public class ExecutionRuleContext {
   ExecutionEngineRule.ExecutionEngine engine;
   Object extraDecisionMakerParam;
+  boolean allApplicationTable = true;
 
   ExecutionRuleContext(ExecutionEngineRule.ExecutionEngine engine) {
     this.engine = engine;
@@ -32,6 +33,14 @@ public class ExecutionRuleContext {
 
   public void setExtraDecisionMakerParam(Object extraDecisionMakerParam) {
     this.extraDecisionMakerParam = extraDecisionMakerParam;
+  }
+
+  public void setAllApplicationTable(boolean flag) {
+    this.allApplicationTable = flag;
+  }
+
+  public boolean getAllApplicationTable() {
+    return this.allApplicationTable;
   }
 
   public ExecutionEngineRule.ExecutionEngine getEngine() {

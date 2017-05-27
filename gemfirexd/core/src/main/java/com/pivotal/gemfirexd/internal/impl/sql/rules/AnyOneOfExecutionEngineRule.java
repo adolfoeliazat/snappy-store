@@ -63,6 +63,8 @@ class AnyOneOfExecutionEngineRule extends ExecutionEngineRule {
       }
     }
 
+    // If more than one table are involved then such queries also should be routed
+    // for better performance.
     List<TableQueryInfo> tqis = qInfo.getTableQueryInfoList();
     if (tqis != null && tqis.size() > 1) {
       return ExecutionEngine.SPARK;
