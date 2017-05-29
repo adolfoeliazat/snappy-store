@@ -17,10 +17,16 @@
 
 package com.pivotal.gemfirexd.internal.impl.sql.rules;
 
+import com.pivotal.gemfirexd.internal.engine.GfxdConstants;
+import com.pivotal.gemfirexd.internal.engine.distributed.utils.GemFireXDUtils;
+import com.pivotal.gemfirexd.internal.engine.store.GemFireContainer;
+import com.pivotal.gemfirexd.internal.iapi.services.sanity.SanityManager;
+
 public class ExecutionRuleContext {
   ExecutionEngineRule.ExecutionEngine engine;
   Object extraDecisionMakerParam;
-  boolean allApplicationTable = true;
+  int numAppTables = 0;
+  int numSysTables = 0;
 
   ExecutionRuleContext(ExecutionEngineRule.ExecutionEngine engine) {
     this.engine = engine;
@@ -35,12 +41,21 @@ public class ExecutionRuleContext {
     this.extraDecisionMakerParam = extraDecisionMakerParam;
   }
 
-  public void setAllApplicationTable(boolean flag) {
-    this.allApplicationTable = flag;
+  public void setTableType(GemFireContainer gfc) {
+    boolean appTable = gfc.isApplicationTable();
+    if (appTable) {
+      numAppTables++;
+    } else {
+      numSysTables++;
+    }
   }
 
-  public boolean getAllApplicationTable() {
-    return this.allApplicationTable;
+  public boolean canRoute() {
+    // Attempt Spark execution only when no sys tables involved
+    if (numAppTables > 0 && numSysTables == 0) {
+      return true;
+    }
+    return false;
   }
 
   public ExecutionEngineRule.ExecutionEngine getEngine() {
