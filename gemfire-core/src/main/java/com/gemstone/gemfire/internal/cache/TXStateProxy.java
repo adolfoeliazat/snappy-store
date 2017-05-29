@@ -27,6 +27,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.concurrent.locks.ReentrantLock;
 
 import javax.transaction.Status;
 import javax.transaction.Synchronization;
@@ -81,7 +82,6 @@ import com.gemstone.gemfire.internal.cache.execute.InternalRegionFunctionContext
 import com.gemstone.gemfire.internal.cache.locks.ExclusiveSharedSynchronizer;
 import com.gemstone.gemfire.internal.cache.locks.LockingPolicy;
 import com.gemstone.gemfire.internal.cache.locks.LockingPolicy.ReadEntryUnderLock;
-import com.gemstone.gemfire.internal.cache.locks.NonReentrantLock;
 import com.gemstone.gemfire.internal.cache.locks.NonReentrantReadWriteLock;
 import com.gemstone.gemfire.internal.cache.partitioned.Bucket;
 import com.gemstone.gemfire.internal.cache.partitioned.DestroyMessage;
@@ -166,7 +166,7 @@ public class TXStateProxy extends NonReentrantReadWriteLock implements
    * This lock is used for changes to own state since it can be accessed by
    * multiple threads via distributed function execution.
    */
-  protected final NonReentrantLock lock;
+  protected final ReentrantLock lock;
 
   /**
    * Used to check that a hosted TXStateProxy can be really removed only when
@@ -618,7 +618,7 @@ public class TXStateProxy extends NonReentrantReadWriteLock implements
     }
     this.inconsistentThr = null;
 
-    this.lock = new NonReentrantLock(true, cache.getCancelCriterion());
+    this.lock = new ReentrantLock(true);
     // start off with a single reference for the creator
     this.refCount = new AtomicInteger(1);
     this.regions = new SetWithCheckpoint(true);
