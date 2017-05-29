@@ -888,6 +888,7 @@ public final class GemFireStore implements AccessFactory, ModuleControl,
     }
     for(String key : gfeGridMappings.keySet() ) {
       props.remove(key);
+      finalGFXDBootProps.remove(key);
     }
 
     propName = Attribute.DUMP_TIME_STATS_FREQ;
