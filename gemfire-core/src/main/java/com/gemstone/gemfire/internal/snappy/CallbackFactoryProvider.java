@@ -159,7 +159,6 @@ public abstract class CallbackFactoryProvider {
     @Override
     public void logMemoryStats() {
     }
->>>>>>> origin/snappy/master
   };
 
   public static void setStoreCallbacks(StoreCallbacks cb) {
