@@ -701,6 +701,7 @@ class DRDAStatement
                   database.getConnection().getLanguageConnectionContext()
                       .setExecuteLocally(BUCKET_FLAG, null, false, null);
                 }
+		sqlStmt = trimNulls(sqlStmt);
 		// Gemstone changes END
 		return prepare(sqlStmt);
 	}
@@ -711,6 +712,16 @@ class DRDAStatement
 	}
 
 // GemStone changes BEGIN
+	private static String trimNulls(String sqlStmt) {
+	  // trim any trailing nulls
+	  int stmtEnd = sqlStmt.length();
+	  while (stmtEnd > 0 && sqlStmt.charAt(stmtEnd - 1) == 0) stmtEnd--;
+	  if (stmtEnd < sqlStmt.length()) {
+	    sqlStmt = sqlStmt.substring(0, stmtEnd);
+	  }
+	  return sqlStmt;
+	}
+
 	private static final Set<Integer> BUCKET_FLAG = Collections
 	    .unmodifiableSet(new HashSet<Integer>(1));
 
@@ -730,13 +741,13 @@ class DRDAStatement
 
           pstmt = database.getConnection().createStatement(scrollType,
               concurType, withHoldCursor);
-					if (pstmt instanceof EmbedStatement) {
-						Properties props = new Properties();
-						props.setProperty(Attribute.USERNAME_ATTR, database.userId);
-						props.setProperty(Attribute.PASSWORD_ATTR, database.password);
-						((EmbedStatement)pstmt).setConnProps(props);
-					}
-          this.sqlText = sqlStmt;
+          if (pstmt instanceof EmbedStatement) {
+            Properties props = new Properties();
+            props.setProperty(Attribute.USERNAME_ATTR, database.userId);
+            props.setProperty(Attribute.PASSWORD_ATTR, database.password);
+            ((EmbedStatement)pstmt).setConnProps(props);
+          }
+          this.sqlText = trimNulls(sqlStmt);
 
           // beetle 3849 - Need to change the cursor name to what
           // JCC thinks it will be, since there is no way in the

@@ -36,10 +36,13 @@ dependencies {
   compile 'commons-pool:commons-pool:1.6'
   compile 'commons-dbcp:commons-dbcp:1.4'
   compile "jline:jline:${jlineVersion}"
+  compile "org.apache.thrift:libthrift:${thriftVersion}"
+  compile "com.esotericsoftware:kryo-shaded:${kryoVersion}"
+  compile "org.apache.spark:spark-unsafe_${scalaBinaryVersion}:${sparkVersion}"
 
   // use dunit support from snappydata
   if (subprojectBase == ':') {
-    testCompile 'io.snappydata:dunit:1.0.4-3'
+    testCompile 'io.snappydata:dunit:1.0.3.3'
   } else {
     testCompile project(':dunit')
   }
@@ -52,7 +55,6 @@ dependencies {
   provided 'xalan:serializer:2.7.2'
   provided "com.pivotal:pxf-api:${pxfVersion}"
 
-  provided "org.apache.spark:spark-unsafe_${scalaBinaryVersion}:${sparkVersion}"
   provided "org.apache.hadoop:hadoop-annotations:${hadoopVersion}"
   provided "org.apache.hadoop:hadoop-auth:${hadoopVersion}"
   provided "org.apache.hadoop:hadoop-common:${hadoopVersion}"
@@ -90,7 +92,6 @@ dependencies {
   }
 
   testRuntime project(subprojectBase + 'gemfirexd-core')
-  testRuntime "org.apache.spark:spark-unsafe_${scalaBinaryVersion}:${sparkVersion}"
 }
 
 // move javacc output directory to a place where IDEA can easily register

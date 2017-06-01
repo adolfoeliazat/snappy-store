@@ -79,6 +79,8 @@ dependencies {
   runtime "org.apache.derby:derby:${derbyVersion}"
   runtime "org.apache.derby:derbynet:${derbyVersion}"
   runtime "org.apache.derby:derbyclient:${derbyVersion}"
+  runtime "org.apache.thrift:libthrift:${thriftVersion}"
+  runtime "com.esotericsoftware:kryo-shaded:${kryoVersion}"
   runtime "org.apache.spark:spark-unsafe_${scalaBinaryVersion}:${sparkVersion}"
 }
 
