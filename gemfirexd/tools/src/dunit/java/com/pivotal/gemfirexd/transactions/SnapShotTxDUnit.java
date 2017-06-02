@@ -59,11 +59,11 @@ public class SnapShotTxDUnit extends DistributedSQLTestBase {
 
   @Override
   public void setUp() throws Exception {
-    System.setProperty("gemfire.Cache.ENABLE_DEFAULT_SNAPSHOT_ISOLATION", "true");
+    System.setProperty("gemfire.cache.ENABLE_DEFAULT_SNAPSHOT_ISOLATION", "true");
     invokeInEveryVM(new SerializableRunnable() {
       @Override
       public void run() {
-        System.setProperty("gemfire.Cache.ENABLE_DEFAULT_SNAPSHOT_ISOLATION", "true");
+        System.setProperty("gemfire.cache.ENABLE_DEFAULT_SNAPSHOT_ISOLATION", "true");
       }
     });
     super.setUp();
@@ -71,11 +71,11 @@ public class SnapShotTxDUnit extends DistributedSQLTestBase {
 
   @Override
   public void tearDown2() throws Exception {
-    System.setProperty("gemfire.Cache.ENABLE_DEFAULT_SNAPSHOT_ISOLATION", "false");
+    System.setProperty("gemfire.cache.ENABLE_DEFAULT_SNAPSHOT_ISOLATION", "false");
     invokeInEveryVM(new SerializableRunnable() {
       @Override
       public void run() {
-        System.setProperty("gemfire.Cache.ENABLE_DEFAULT_SNAPSHOT_ISOLATION", "false");
+        System.setProperty("gemfire.cache.ENABLE_DEFAULT_SNAPSHOT_ISOLATION", "false");
       }
     });
     super.tearDown2();

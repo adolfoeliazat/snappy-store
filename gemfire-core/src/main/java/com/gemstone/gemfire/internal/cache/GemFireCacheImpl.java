@@ -286,9 +286,11 @@ public class GemFireCacheImpl implements InternalCache, ClientCache, HasCachePer
   /**
    * System property to disable default snapshot
    */
-  public final boolean DEFAULT_SNAPSHOT_ENABLED = Boolean.getBoolean("gemfire.Cache.ENABLE_DEFAULT_SNAPSHOT_ISOLATION");
+  private final boolean DEFAULT_SNAPSHOT_ENABLED = SystemProperties.getServerInstance().getBoolean(
+      "cache.ENABLE_DEFAULT_SNAPSHOT_ISOLATION", getInternalProductCallbacks().isSnappyStore());
 
-  public final boolean DEFAULT_SNAPSHOT_ENABLED_TX = Boolean.getBoolean("gemfire.Cache.ENABLE_DEFAULT_SNAPSHOT_ISOLATION_TX");
+  private final boolean DEFAULT_SNAPSHOT_ENABLED_TX = SystemProperties.getServerInstance().getBoolean(
+      "cache.ENABLE_DEFAULT_SNAPSHOT_ISOLATION_TX", false);
 
   /**
    * Property set to true if resource manager heap percentage is set and query monitor is required
@@ -1440,11 +1442,7 @@ public class GemFireCacheImpl implements InternalCache, ClientCache, HasCachePer
   public boolean snapshotEnabled() {
     // if rowstore return false
     // if snappy return true
-    if (getInternalProductCallbacks().isSnappyStore()) {
-      return !DEFAULT_SNAPSHOT_ENABLED;
-    } else {
-      return DEFAULT_SNAPSHOT_ENABLED;
-    }
+    return DEFAULT_SNAPSHOT_ENABLED;
   }
 
   public boolean snapshotEnabledForTX() {

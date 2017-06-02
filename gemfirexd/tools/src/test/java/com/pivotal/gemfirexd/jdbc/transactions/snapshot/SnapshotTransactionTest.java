@@ -48,13 +48,13 @@ public class SnapshotTransactionTest  extends JdbcTestBase {
 
   @Override
   protected void setUp() throws Exception {
-    System.setProperty("gemfire.Cache.ENABLE_DEFAULT_SNAPSHOT_ISOLATION", "true");
+    System.setProperty("gemfire.cache.ENABLE_DEFAULT_SNAPSHOT_ISOLATION", "true");
     super.setUp();
   }
 
   @Override
   public void tearDown() throws Exception {
-    System.setProperty("gemfire.Cache.ENABLE_DEFAULT_SNAPSHOT_ISOLATION", "false");
+    System.setProperty("gemfire.cache.ENABLE_DEFAULT_SNAPSHOT_ISOLATION", "false");
     super.tearDown();
 
   }
