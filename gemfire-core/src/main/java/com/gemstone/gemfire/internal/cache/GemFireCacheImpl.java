@@ -221,8 +221,8 @@ public class GemFireCacheImpl implements InternalCache, ClientCache, HasCachePer
   /**
    * System property to disable default snapshot
    */
-  private final boolean DEFAULT_SNAPSHOT_ENABLED = SystemProperties.getServerInstance().getBoolean(
-      "cache.ENABLE_DEFAULT_SNAPSHOT_ISOLATION", getInternalProductCallbacks().isSnappyStore());
+  public boolean DEFAULT_SNAPSHOT_ENABLED = SystemProperties.getServerInstance().getBoolean(
+      "cache.ENABLE_DEFAULT_SNAPSHOT_ISOLATION", false);
 
   private final boolean DEFAULT_SNAPSHOT_ENABLED_TX = SystemProperties.getServerInstance().getBoolean(
       "cache.ENABLE_DEFAULT_SNAPSHOT_ISOLATION_TX", false);
@@ -676,6 +676,30 @@ public class GemFireCacheImpl implements InternalCache, ClientCache, HasCachePer
     return oldEntryMap.get(regionName);
   }
 
+  public void startOldEntryCleanerService() {
+    getLoggerI18n().info(LocalizedStrings.DEBUG,
+        "Snapshot is enabled " + snapshotEnabled());
+
+    if (oldEntryMapCleanerService == null) {
+      final LogWriterImpl.LoggingThreadGroup threadGroup = LogWriterImpl.createThreadGroup("OldEntry GC Thread Group",
+          this.system.getLogWriterI18n());
+      ThreadFactory oldEntryGCtf = new ThreadFactory() {
+        public Thread newThread(Runnable command) {
+          Thread thread = new Thread(threadGroup, command,
+              "OldEntry GC Thread");
+          thread.setDaemon(true);
+          return thread;
+        }
+      };
+
+      getLoggerI18n().info(LocalizedStrings.DEBUG,
+          "Snapshot is enabled, starting the cleaner thread.");
+      oldEntryMapCleanerService = Executors.newScheduledThreadPool(1, oldEntryGCtf);
+      oldEntryMapCleanerService.scheduleAtFixedRate(new OldEntriesCleanerThread(), 0, OLD_ENTRIES_CLEANER_TIME_INTERVAL,
+          TimeUnit.MILLISECONDS);
+    }
+  }
+
   class OldEntriesCleanerThread implements Runnable {
     // Keep each entry alive for atleast 5 mins.
     public void run() {
@@ -961,22 +985,9 @@ public class GemFireCacheImpl implements InternalCache, ClientCache, HasCachePer
       //this.oldEntryMap = new CustomEntryConcurrentHashMap<>();
       this.oldEntryMap = new ConcurrentHashMap<String, Map<Object, BlockingQueue<RegionEntry>>>();
 
-      final LogWriterImpl.LoggingThreadGroup threadGroup = LogWriterImpl.createThreadGroup("OldEntry GC Thread Group",
-          this.system.getLogWriterI18n());
-      ThreadFactory oldEntryGCtf = new ThreadFactory() {
-        public Thread newThread(Runnable command) {
-          Thread thread = new Thread(threadGroup, command,
-              "OldEntry GC Thread");
-          thread.setDaemon(true);
-          return thread;
-        }
-      };
-
-      //if (snapshotEnabled()) {
-        oldEntryMapCleanerService = Executors.newScheduledThreadPool(1, oldEntryGCtf);
-        oldEntryMapCleanerService.scheduleAtFixedRate(new OldEntriesCleanerThread(), 0, OLD_ENTRIES_CLEANER_TIME_INTERVAL,
-            TimeUnit.MILLISECONDS);
-      //}
+      if (snapshotEnabled()) {
+        startOldEntryCleanerService();
+      }
 
       this.creationDate = new Date();
 
