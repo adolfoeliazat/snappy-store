@@ -70,18 +70,9 @@ public class RegionVersionVectorJUnitTest extends TestCase {
     rvv1.getCurrentVersion();
     System.out.println("This node init, rvv1="+rvv1.fullToString());
 
-    //rvv1.recordVersion(id1,);
-    //assert(rvv1.contains(id1,19));
-    /*RegionVersionHolder vh2 = new RegionVersionHolder(member);
-    for(int i=1;i<19;i++) {
-      vh2.recordVersion(i,null);
-    }
-
-    System.out.println("This node init, vh2="+vh2);
-    vh2.initializeFrom(vh1);
-    System.out.println("This node init, vh2="+vh2);*/
+    assert(rvv1.fullToString().contentEquals("RegionVersionVector[00000000-0000-0001-0000-000000000000={rv19 gc0 localVersion=19 local exceptions=[]} others={00000000-0000-0001-0000-000000000000={rv19 bsv1 bs=[], 00000000-0000-0002-0000-000000000000={rv11 bsv11 bs=[0]}, gc={}]"));
+    assert(rvv1.contains(id1,19));
   }
-
 
   public void testExceptionsWithContains() {
     DiskStoreID ownerId = new DiskStoreID(0, 0);
