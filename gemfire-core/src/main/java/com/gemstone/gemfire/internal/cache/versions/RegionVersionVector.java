@@ -669,6 +669,11 @@ public abstract class RegionVersionVector<T extends VersionSource<?>> implements
         this.localExceptions.initializeFrom(vh);
       }
     } else {
+      if (mbr.equals(this.myId)) {
+        RegionVersionHolder<T> vh = otherHolder;
+        long version = vh.version;
+        updateLocalVersion(version);
+      }
       // holders must be modified under synchronization
       h.initializeFrom(otherHolder);
     }
